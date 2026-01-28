@@ -1983,6 +1983,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9162288874885191205, guid: e55c4d7905c9f1447a69a3289f58a629, type: 3}
+      propertyPath: slideTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9162288874885191205, guid: e55c4d7905c9f1447a69a3289f58a629, type: 3}
+      propertyPath: hitDistance
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9162288874885191205, guid: e55c4d7905c9f1447a69a3289f58a629, type: 3}
       propertyPath: forwardSpeed
       value: 15
       objectReference: {fileID: 0}

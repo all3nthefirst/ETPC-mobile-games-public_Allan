@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _charCtr;
 
     private float timeIncrement = 0f;
+    private Vector3 _playerHorDir;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -77,8 +78,9 @@ public class PlayerController : MonoBehaviour
         Vector3 verticalMove = Vector3.up * _currentGravity;
         Vector3 horizontalMove = Vector3.MoveTowards(_charCtr.transform.position, targetPosition, laneSwapSpeed * Time.fixedDeltaTime);
         horizontalMove = new Vector3(horizontalMove.x - transform.position.x, 0, 0);
-        
-        _charCtr.Move(forwardMove + horizontalMove + verticalMove);
+        _playerHorDir = forwardMove + horizontalMove;
+
+        _charCtr.Move(_playerHorDir + verticalMove);
     }
 
     private void MoveLane(int direction)
@@ -119,6 +121,11 @@ public class PlayerController : MonoBehaviour
         render.localScale = new Vector3(0.7f, 0.4f, 0.7f);
         render.transform.localPosition = Vector3.up * 0.4f;
 
+        animator.SetBool("Roll", true);
+        yield return new WaitForEndOfFrame();
+
+        animator.SetBool("Roll", false);
+
         yield return new WaitForSeconds(slideTime);
 
         // Reset to default values
@@ -134,11 +141,12 @@ public class PlayerController : MonoBehaviour
     public void CheckHealth()
     {   
         RaycastHit hit;
-        Vector3 p1 = transform.position;
-        Vector3 p2 = p1 + Vector3.up * _charCtr.height;
+        Vector3 p1 = transform.position + _playerHorDir * _charCtr.radius;
+        Vector3 p2 = p1 + Vector3.up * _charCtr.height * 0.5f;
 
-        if(Physics.CapsuleCast(p1, p2, _charCtr.radius, transform.forward, out hit, hitDistance, collisionLayerMask, QueryTriggerInteraction.Ignore))
+        if(Physics.CapsuleCast(p1, p2, _charCtr.radius * 0.5f, _playerHorDir, out hit, hitDistance, collisionLayerMask, QueryTriggerInteraction.Ignore))
         {
+            Debug.Log(hit.collider.name, hit.collider.gameObject);
             if(_isAlive)
             {
                 GameStateManager.Instance.ChangeGameState(GameState.StateType.OVER);
@@ -146,7 +154,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Physics.CheckCapsule(p1, p2, _charCtr.radius, collisionLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.CheckCapsule(p1, p2, _charCtr.radius, collisionLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (_isAlive)
             {
@@ -154,5 +162,19 @@ public class PlayerController : MonoBehaviour
                 _isAlive = false;
             }
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Vector3 p1 = transform.position; 
+        Vector3 p2 = p1 + Vector3.up * _charCtr.height * 0.75f;
+
+        Gizmos.color = new Color(0.75f, 0.0f, 0.0f, 0.75f);
+
+        // Convert the local coordinate values into world
+        // coordinates for the matrix transformation.
+        //Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.DrawCube(p1, Vector3.one * 0.25f);
+        Gizmos.DrawCube(p2, Vector3.one * 0.25f);
     }
 }
