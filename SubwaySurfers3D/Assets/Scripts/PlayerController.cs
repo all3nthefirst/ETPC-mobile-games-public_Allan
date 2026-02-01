@@ -241,4 +241,5 @@ public class PlayerController : MonoBehaviour
         // Si no pertenece a un tile, destruye solo el objeto del collider (sin root)
         Destroy(hit.collider.gameObject);
     }
+    // test push
 }
